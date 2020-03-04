@@ -10,22 +10,27 @@
         text-color="#fff"
         >
         <el-submenu 
-          v-for="(submenu, index) in routes"
-          :key="submenu.id"
+          v-for="(submenu, index) in menuList"
+          :key="submenu.path"
           :index="`${index}`"
+          v-if="!submenu.hidden"
         >
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span>{{ submenu.title }}</span>
+          <template slot="title" v-if="!submenu.hidden">
+            <i v-if="submenu.children.length > 1" :class="`el-icon-${submenu.meta.icon}`"></i>
+            <i v-else :class="`el-icon-${submenu.children[0].meta.icon}`"></i>
+            <span v-if="submenu.children.length > 1">{{ submenu.meta.title }}</span>
+            <span v-else>{{ submenu.children[0].meta.title }}</span>
           </template>
-          <el-menu-item-group>
+          <el-menu-item-group v-if="!submenu.hidden">
             <el-menu-item 
               class="menu-item"
-              v-for="(menuitem, itemIndex) in submenu.link"
-              :key="menuitem.id"
+              v-for="(menuitem, itemIndex) in submenu.children"
+              :key="menuitem.path"
               :index="`${index}-${itemIndex}`"
-              @click="changeActive(`${index}-${itemIndex}`, menuitem.path)">
-              {{ menuitem.name }}
+              @click="changeActive(`${index}-${itemIndex}`, (submenu.children.length > 1 
+                                                                ? submenu.path+(submenu.path.substr(-1, 1) == '/' ? '' : '/')+menuitem.path
+                                                                : menuitem.path))">
+              {{ menuitem.meta.title }}
             </el-menu-item>
           </el-menu-item-group>
         </el-submenu>
@@ -34,7 +39,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
+import store from '@/store'
 export default {
   props: {
     isCollapse: {
@@ -48,7 +54,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['routes'])
+    ...mapGetters(['menuList'])
+    // routes() {
+    //   // return this.$router.options.routes
+    //   return store.getters.menuList
+    // }
   },
   methods: {
     changeActive(activeIndex, path) {
@@ -66,7 +76,8 @@ export default {
     }
   },
   mounted() {
-    this.activeIndex = localStorage.getItem('active-index')
+    this.activeIndex = localStorage.getItem('active-index')    
+    console.log(this.menuList)
   }
 }
 </script>

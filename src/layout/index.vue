@@ -34,9 +34,6 @@ export default {
     }
   },
   created() {
-    if (localStorage.getItem('token') === null) {
-      this.$router.push({ path: '/login' })
-    }
   }
 }
 </script>
@@ -45,7 +42,6 @@ export default {
 .layout {
   height: 100%;
   overflow: hidden;
-
   display: flex;
   flex-direction: row;
   .content {

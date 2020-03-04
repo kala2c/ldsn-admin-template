@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import store from '@/store'
 import { MessageBox } from 'element-ui'
 
 const request = async (q, url, method) => {
@@ -9,10 +9,12 @@ const request = async (q, url, method) => {
 
   // let method = query.method || 'get'
   // let data = query.method || {}
+
+  let token = store.getters.token
   await axios({
     url,
     method: method || 'get',
-    // headers: {"Content-type": "application/x-www-form-urlencode"},
+    headers: {"Authorization": "Bearer "+token},
     data: query.data || {}
   }).then(res => {
     response = res

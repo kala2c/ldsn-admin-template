@@ -24,6 +24,9 @@
 
 <script>
 import axios from 'axios'
+import api from '@/api'
+import store from '@/store'
+// import { mapActions } from 'vuex'
 export default {
   data() {
     return {
@@ -40,19 +43,34 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
-      localStorage.setItem('token', 'token')
+    // 登录
+    async onSubmit() {
+      let res = await api.login({data: this.formData})
+      let data = res.data
+      // 根据许可信息添加路由
+      store.dispatch('routes/addRoutes', data.permission)
+      // 设置用户信息
+      // store.dispatch('user/setUserInfo', data.userinfo)
+      // 设置token信息
+      // store.dispatch('user/setToken', data.token)
+      // 两步并为一步
+      store.dispatch('user/login', data)
       this.$message({
         message: '登录成功',
         duration: 1200
       })
+      console.log(this.$routes)
+      return
       setTimeout(() => {
         this.$router.push({ path: '/' })
       }, 1200)
     }
   },
   mounted() {
-    axios.post('/api/login', this.formData).then(res => {
+    if (this.isAutoLogin) {
+      // this.onSubmit()
+    }
+    axios.post('/api/admin/login', this.formData).then(res => {
       console.log(res)
     })
   }

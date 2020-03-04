@@ -5,7 +5,13 @@
 </template>
 
 <script>
+import store from '@/store'
 export default {
+  mounted() {
+    // setInterval(() => {
+    //   console.log(this.$router.option)
+    // }, 1000)
+  }
 }
 </script>
 

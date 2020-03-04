@@ -26,17 +26,18 @@
         <i v-show="isFullScreen" class="el-icon-switch-button"></i>
       </div>
       <el-submenu index="3">
-        <template slot="title">admin</template>
+        <template slot="title">{{userAvatar}} | {{username}}</template>
         <el-menu-item index="4-1">个人资料</el-menu-item>
         <el-menu-item index="4-2">设置</el-menu-item>
-        <el-menu-item index="4-3">退出登录</el-menu-item>
+        <el-menu-item index="4-3" @click="logout">退出登录</el-menu-item>
       </el-submenu>
     </el-menu>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
+import store from '@/store'
 export default {
   props: {
     sideBarFold: {
@@ -54,10 +55,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['routes'])
+    ...mapGetters(['menuList', 'username', 'userAvatar'])
   },
   watch: {
     '$route'(val) {
+      console.log(val)
       this.changeLinkList(val.path)
     }
   },
@@ -66,18 +68,23 @@ export default {
       // console.log(key, keyPath)
     },
     changeLinkList(path) {
-      this.routes.forEach(submenu => {
-        let title = submenu.title
-        submenu.link.forEach(menuItem => {
-          if (menuItem.path === path) {
-            if (this.linkList.length > 2) {
-              this.linkList.pop()
-              this.linkList.pop()
-            }
-            this.linkList.push({ name: title, path: '' })
-            this.linkList.push({ name: menuItem.name, path: '' })
-          }
-        })
+      this.menuList.forEach(submenu => {
+        if (submenu.hidden) return
+        // if (submenu.children.length > 1) {
+        //   submenu.children.forEach(menuItem => {
+        //     if (menuItem.path === path) {
+        //       if (this.linkList.length > 2) {
+        //         this.linkList.pop()
+        //         this.linkList.pop()
+        //       }
+        //       this.linkList.push({ name: title, path: '' })
+        //       this.linkList.push({ name: menuItem.name, path: '' })
+        //     }
+        //   })
+        // } else {
+        //   let title = submenu.children[0].meta.title
+        //   let path = submenu.children[0].path
+        // }
       })
     },
     fullScreen() {
@@ -101,10 +108,17 @@ export default {
           document.webkitExitFullscreen();
         }
       }
+    },
+    logout() {
+      store.dispatch('user/logout')
+      setTimeout(() => {
+        this.$router.push({path: 'login'})
+      }, 500)
     }
   },
   created() {
     this.changeLinkList(this.$route.path)
+    // console.log(this.$router.options.routes)
   }
 }
 </script>

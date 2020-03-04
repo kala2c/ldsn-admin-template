@@ -1,19 +1,17 @@
 # ldsn-admin-template
 
-## Project setup
+## 介绍
+一个基于Vue和ElementUI的后台管理模板，包含了常见的业务场景
+
+## 开发
 ```
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
 npm run serve
 ```
+## 概要
 
-### Compiles and minifies for production
-```
-npm run build
-```
+### 后台管理布局
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 请求包装
+
+### 分角色路由

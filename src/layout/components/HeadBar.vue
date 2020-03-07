@@ -3,28 +3,19 @@
     <el-menu
       class="nav-menu"
       mode="horizontal"
-      @select="handleSelect"
       >
-      <div class="nav-menu-btn" @click="$emit('toggleSideBar')">
-        <i :class="`el-icon-s-${ sideBarFold ? `fold` : `unfold`}`"></i>
+      <div class="nav-menu-btn" @click="toggleSideBarCollapse">
+        <i :class="`el-icon-s-${ sideBarCollapse ? `fold` : `unfold`}`"></i>
       </div>
-      <el-breadcrumb class="breadcrumb" separator="/">
-        <el-breadcrumb-item
-          v-for="(item, index) in linkList"
-          :key="index"
-        >{{item.name}}</el-breadcrumb-item>
-      </el-breadcrumb>
+      <breadcrumb class="breadcrumb"></breadcrumb>
       <div class="search">
-          <el-input
-            placeholder="请输入关键字"
-            suffix-icon="el-icon-search"
-            v-model="key">
-          </el-input>
+        <el-input
+          placeholder="请输入关键字"
+          suffix-icon="el-icon-search"
+          v-model="key">
+        </el-input>
       </div>
-      <div class="nav-menu-btn" @click="fullScreen()">
-        <i v-show="!isFullScreen" class="el-icon-full-screen"></i>
-        <i v-show="isFullScreen" class="el-icon-switch-button"></i>
-      </div>
+      <full-screen-button></full-screen-button>
       <el-submenu index="3">
         <template slot="title">{{userAvatar}} | {{username}}</template>
         <el-menu-item index="4-1">个人资料</el-menu-item>
@@ -38,75 +29,28 @@
 <script>
 import { mapGetters } from 'vuex'
 import store from '@/store'
+
+import Breadcrumb from './Breadcrumb'
+import FullScreenButton from './FullScreenButton'
 export default {
-  props: {
-    sideBarFold: {
-      type: Boolean,
-      default: false
-    }
+  components: {
+    Breadcrumb,
+    FullScreenButton
   },
   data() {
     return {
-      key: '',
-      linkList: [
-        { name: '首页', path: '' }
-      ],
-      isFullScreen: false,
+      key: ''
     }
   },
   computed: {
-    ...mapGetters(['menuList', 'username', 'userAvatar'])
-  },
-  watch: {
-    '$route'(val) {
-      console.log(val)
-      this.changeLinkList(val.path)
-    }
+    ...mapGetters(['menuList', 'username', 'userAvatar', 'sideBarCollapse'])
   },
   methods: {
-    handleSelect(key, keyPath) {
-      // console.log(key, keyPath)
-    },
-    changeLinkList(path) {
-      this.menuList.forEach(submenu => {
-        if (submenu.hidden) return
-        // if (submenu.children.length > 1) {
-        //   submenu.children.forEach(menuItem => {
-        //     if (menuItem.path === path) {
-        //       if (this.linkList.length > 2) {
-        //         this.linkList.pop()
-        //         this.linkList.pop()
-        //       }
-        //       this.linkList.push({ name: title, path: '' })
-        //       this.linkList.push({ name: menuItem.name, path: '' })
-        //     }
-        //   })
-        // } else {
-        //   let title = submenu.children[0].meta.title
-        //   let path = submenu.children[0].path
-        // }
-      })
-    },
-    fullScreen() {
-      this.isFullScreen = !this.isFullScreen
-      if (this.isFullScreen) {
-        if(document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen();
-        } else if(document.documentElement.mozRequestFullScreen) {
-          document.documentElement.mozRequestFullScreen();
-        } else if(document.documentElement.webkitRequestFullscreen) {
-          document.documentElement.webkitRequestFullscreen();
-        } else if(document.documentElement.msRequestFullscreen) {
-          document.documentElement.msRequestFullscreen();
-        }
+    toggleSideBarCollapse() {
+      if (this.sideBarCollapse) {
+        store.dispatch('app/unfoldSideBar')
       } else {
-        if(document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if(document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if(document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
+        store.dispatch('app/foldSideBar')
       }
     },
     logout() {
@@ -115,10 +59,6 @@ export default {
         this.$router.push({path: 'login'})
       }, 500)
     }
-  },
-  created() {
-    this.changeLinkList(this.$route.path)
-    // console.log(this.$router.options.routes)
   }
 }
 </script>
@@ -133,11 +73,6 @@ export default {
   .el-submenu {
     border: none!important;
   }
-  .nav-menu-btn {
-    padding: 0 10px;
-    outline: none;
-    cursor: pointer;
-  }
   .breadcrumb {
     display: flex;
     align-items: center;
@@ -145,6 +80,11 @@ export default {
     height: 100%;
     padding-left: 15px;
     outline: none;
+  }
+  .nav-menu-btn {
+    padding: 0 10px;
+    outline: none;
+    cursor: pointer;
   }
   .search {
     margin: 0 10px;

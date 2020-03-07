@@ -37,6 +37,7 @@ export const constantRoutes = [
     path: '/dashboard',
     component: Layout,
     // redirect: '/dashboard',
+    meta: {title: '控制台', icon: 'menu'},
     children: [{
       path: '/dashboard',
       name: 'Dashboard',

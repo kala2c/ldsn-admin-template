@@ -5,42 +5,26 @@
         class="el-menu-vertical-demo menu"
         @open="handleOpen"
         @close="handleClose"
-        :collapse="isCollapse"
+        :collapse="sideBarCollapse"
         background-color="#393d49"
         text-color="#fff"
         >
-        <el-submenu 
+        <side-bar-item
           v-for="(submenu, index) in menuList"
           :key="submenu.path"
-          :index="`${index}`"
           v-if="!submenu.hidden"
+          :submenu="submenu"
+          :submenuIndex="index"
         >
-          <template slot="title" v-if="!submenu.hidden">
-            <i v-if="submenu.children.length > 1" :class="`el-icon-${submenu.meta.icon}`"></i>
-            <i v-else :class="`el-icon-${submenu.children[0].meta.icon}`"></i>
-            <span v-if="submenu.children.length > 1">{{ submenu.meta.title }}</span>
-            <span v-else>{{ submenu.children[0].meta.title }}</span>
-          </template>
-          <el-menu-item-group v-if="!submenu.hidden">
-            <el-menu-item 
-              class="menu-item"
-              v-for="(menuitem, itemIndex) in submenu.children"
-              :key="menuitem.path"
-              :index="`${index}-${itemIndex}`"
-              @click="changeActive(`${index}-${itemIndex}`, (submenu.children.length > 1 
-                                                                ? submenu.path+(submenu.path.substr(-1, 1) == '/' ? '' : '/')+menuitem.path
-                                                                : menuitem.path))">
-              {{ menuitem.meta.title }}
-            </el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
+        </side-bar-item>
       </el-menu>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import store from '@/store'
+import SideBarItem from './SideBarItem'
 export default {
   props: {
     isCollapse: {
@@ -48,36 +32,26 @@ export default {
       default: false
     }
   },
+  components: {
+    SideBarItem
+  },
   data() {
     return {
       activeIndex: ''
     }
   },
   computed: {
-    ...mapGetters(['menuList'])
-    // routes() {
-    //   // return this.$router.options.routes
-    //   return store.getters.menuList
-    // }
+    ...mapGetters(['menuList', 'sideBarCollapse'])
   },
   methods: {
-    changeActive(activeIndex, path) {
-      this.activeIndex = activeIndex
-      localStorage.setItem('active-index', activeIndex)
-      if (this.$route.path != path) {
-        this.$router.push({ path })
-      }
-    },
     handleOpen(key, keyPath) {
-      // console.log(key, keyPath)
+      console.log(key, keyPath)
     },
     handleClose(key, keyPath) {
-      // console.log(key, keyPath)
+      console.log(key, keyPath)
     }
   },
   mounted() {
-    this.activeIndex = localStorage.getItem('active-index')    
-    console.log(this.menuList)
   }
 }
 </script>

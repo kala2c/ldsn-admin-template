@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from '@/store'
 import { MessageBox } from 'element-ui'
 
-const request = async (q, url, method) => {
+export const request = async (q, url, method) => {
   let response
 
   let query = q || {}
@@ -26,4 +26,4 @@ const request = async (q, url, method) => {
   return response
 }
 
-export default { request }
+export default request
